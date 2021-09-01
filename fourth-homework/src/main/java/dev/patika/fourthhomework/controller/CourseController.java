@@ -25,15 +25,17 @@ public class CourseController {
         return new ResponseEntity<>(courseService.findAll(),HttpStatus.OK);
     }
 
-    @GetMapping("/find-by-id")
-    public CourseDTO findById(long id){
-        return courseService.findById(id);
+
+    @GetMapping("/find-by-name")
+    public CourseDTO findByName(String name) {
+        return courseService.findByName(name);
     }
 
-    @DeleteMapping("/delete-by-id")
-    public void deleteById(long id) {
-        courseService.deleteById(id);
+    @GetMapping("/delete-by-courseName")
+    public void deleteByName(String courseName){
+        courseService.deleteByName(courseName);
     }
+
 
     @PostMapping("/save-course")
     public ResponseEntity<CourseDTO> saveCourse(@RequestBody @Valid CourseDTO courseDTO){
@@ -41,7 +43,7 @@ public class CourseController {
     }
 
     @PutMapping("/update")
-    public CourseDTO update(CourseDTO courseDTO) {
+    public CourseDTO update(@RequestBody @Valid CourseDTO courseDTO) {
         return courseService.update(courseDTO);
     }
 

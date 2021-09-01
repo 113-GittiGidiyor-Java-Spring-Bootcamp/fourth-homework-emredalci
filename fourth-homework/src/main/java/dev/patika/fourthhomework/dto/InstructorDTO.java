@@ -27,8 +27,4 @@ public class InstructorDTO {
     @NotBlank(message = "Phone number is mandatory")
     @Size(min = 10,max = 11)
     private String phoneNumber;
-
-
-
-
 }

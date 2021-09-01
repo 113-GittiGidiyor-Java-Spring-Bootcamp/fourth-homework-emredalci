@@ -8,6 +8,7 @@ import dev.patika.fourthhomework.exception.StudentIsAlreadyExistException;
 import dev.patika.fourthhomework.mapper.StudentMapper;
 import dev.patika.fourthhomework.model.Student;
 import dev.patika.fourthhomework.repository.StudentRepository;
+import dev.patika.fourthhomework.util.MessageConstants;
 import dev.patika.fourthhomework.util.StudentValidatorUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,9 +47,9 @@ public class StudentService implements BaseService<StudentDTO>{
     @Override
     public StudentDTO save(StudentDTO studentDTO) {
         if (!StudentValidatorUtil.validateStudentAge(studentDTO.getBirthDate(), LocalDate.now())){
-            throw new StudentAgeNotValidException("Student age is not valid");
+            throw new StudentAgeNotValidException(MessageConstants.STUDENT_NOT_VALID);
         }else if (studentRepository.existsByNameAndBirthDate(studentDTO.getName(),studentDTO.getBirthDate())){
-            throw new StudentIsAlreadyExistException("Student is already exist");
+            throw new StudentIsAlreadyExistException(MessageConstants.ENTITY_ALREADY_EXIST);
         }else {
             Student student = studentMapper.mapFromStudentDTOtoStudent(studentDTO);
             studentRepository.save(student);
@@ -58,7 +61,7 @@ public class StudentService implements BaseService<StudentDTO>{
     @Override
     public void deleteByName(String name) {
         if(!studentRepository.findByName(name).isPresent()){
-            throw new EntityNotFoundException("Entity is not found");
+            throw new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND);
         }else {
             studentRepository.deleteByName(name);
         }
@@ -69,12 +72,24 @@ public class StudentService implements BaseService<StudentDTO>{
     @Override
     public StudentDTO update(@RequestBody @Valid StudentDTO studentDTO) {
         if(!studentRepository.existsByNameAndBirthDate(studentDTO.getName(),studentDTO.getBirthDate())){
-            throw new EntityNotFoundException("Entity is not found");
+            throw new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND);
         }else{
             Student student = studentMapper.mapFromStudentDTOtoStudent(studentDTO);
             studentRepository.save(student);
             return studentDTO;
         }
+
+    }
+
+    public Set<Student> findAllIds(Set<Long> studentIds){
+        Set<Student> students = new HashSet<>();
+        for (Long i:studentIds
+             ) {
+            students.add(studentRepository
+                    .findById(i)
+                    .orElseThrow(()-> new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND)));
+        };
+        return students;
 
     }
 }

@@ -11,6 +11,8 @@ import org.springframework.format.annotation.NumberFormat;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -31,5 +33,11 @@ public class CourseDTO{
     @NotNull(message = "Credit score is mandatory")
     @NumberFormat(style = NumberFormat.Style.NUMBER)
     private double creditScore;
+
+    @NotNull(message = "Instructor id is mandatory")
+    private long instructorId;
+
+
+    private Set<Long> studentIds = new HashSet<>();
 
 }

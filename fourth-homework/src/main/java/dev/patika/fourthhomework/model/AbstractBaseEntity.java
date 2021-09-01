@@ -25,7 +25,7 @@ public abstract class AbstractBaseEntity {
 
     @CreatedDate
     @JsonIgnore
-    @Column(name = "created_date", nullable = false)
+    @Column(name = "created_date", nullable = false,updatable = false)
     private Instant createdDate = Instant.now();
 
     @LastModifiedDate

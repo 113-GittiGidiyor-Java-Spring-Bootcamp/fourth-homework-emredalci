@@ -1,6 +1,7 @@
 package dev.patika.fourthhomework.controller;
 
 
+import dev.patika.fourthhomework.dto.InstructorDTO;
 import dev.patika.fourthhomework.dto.StudentDTO;
 import dev.patika.fourthhomework.service.StudentService;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +22,18 @@ public class StudentController {
         return studentService.findAll();
     }
 
-    @GetMapping("/find-by-id")
-    public StudentDTO findById(long id) {
-         return studentService.findById(id);
+
+
+    @GetMapping("/find-by-name")
+    public StudentDTO findByName(String name) {
+        return studentService.findByName(name);
     }
 
-    @DeleteMapping("/delete-by-id")
-    public void deleteById(long id) {
-        studentService.deleteById(id);
+    @DeleteMapping("/delete-by-name")
+    public void deleteByName(String name) {
+        studentService.deleteByName(name);
     }
+
 
     @PostMapping("/save-student")
     public StudentDTO save(@RequestBody @Valid StudentDTO studentDTO) {

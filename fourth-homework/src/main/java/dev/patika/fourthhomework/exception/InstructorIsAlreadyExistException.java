@@ -1,0 +1,8 @@
+package dev.patika.fourthhomework.exception;
+
+public class InstructorIsAlreadyExistException extends RuntimeException{
+
+    public InstructorIsAlreadyExistException(String message){
+        super(message);
+    }
+}

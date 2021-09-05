@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudentDTO {
+public class StudentRequestDTO {
 
     @ApiModelProperty(example = "Ahmet")
     @NotBlank(message = "Student name is mandatory")

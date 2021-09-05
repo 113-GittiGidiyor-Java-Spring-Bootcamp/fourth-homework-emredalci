@@ -8,14 +8,14 @@ import org.springframework.format.annotation.NumberFormat;
 
 import javax.validation.constraints.NotNull;
 
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PermanentInstructorDTO extends InstructorDTO{
+public class VisitingResearcherRequestDTO extends InstructorRequestDTO {
 
-    @ApiModelProperty(example = "1000.0")
-    @NotNull(message = "Fixed salary is mandatory")
+    @ApiModelProperty(example = "100.0")
+    @NotNull(message = "Hourly salary is mandatory")
     @NumberFormat(style = NumberFormat.Style.NUMBER)
-    private double fixedSalary;
-
+    private double hourlySalary;
 }

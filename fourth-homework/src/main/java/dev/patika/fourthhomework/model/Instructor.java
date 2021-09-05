@@ -22,9 +22,9 @@ import java.util.Set;
 @Entity
 @Table(name = "instructors")
 @Inheritance(strategy = InheritanceType.JOINED)
-@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION,defaultImpl = Instructor.class)
-@JsonSubTypes({@JsonSubTypes.Type(PermanentInstructor.class),
-               @JsonSubTypes.Type(VisitingResearcher.class)})
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME,property = "type",include = JsonTypeInfo.As.PROPERTY)
+@JsonSubTypes({@JsonSubTypes.Type(value =PermanentInstructor.class,name="PermanentInstructor"),
+               @JsonSubTypes.Type(value = VisitingResearcher.class,name= "VisitingResearcher")})
 public class Instructor extends AbstractBaseEntity{
 
     @Column(name = "name",nullable = false,length = 25)

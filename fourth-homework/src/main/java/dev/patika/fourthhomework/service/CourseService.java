@@ -1,6 +1,7 @@
 package dev.patika.fourthhomework.service;
 
-import dev.patika.fourthhomework.dto.CourseDTO;
+import dev.patika.fourthhomework.dto.CourseRequestDTO;
+import dev.patika.fourthhomework.dto.CourseResponseDTO;
 import dev.patika.fourthhomework.exception.CourseIsAlreadyExistException;
 import dev.patika.fourthhomework.exception.EntityNotFoundException;
 import dev.patika.fourthhomework.mapper.CourseMapper;
@@ -9,14 +10,17 @@ import dev.patika.fourthhomework.repository.CourseRepository;
 import dev.patika.fourthhomework.util.MessageConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class CourseService implements BaseService<CourseDTO>{
+@Transactional
+public class CourseService implements BaseService<CourseResponseDTO>{
 
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
@@ -26,9 +30,9 @@ public class CourseService implements BaseService<CourseDTO>{
      * @return CourseDTO
      */
     @Override
-    public List<CourseDTO> findAll() {
+    public List<CourseResponseDTO> findAll() {
         return courseRepository.findAll().
-                stream().map(courseMapper::mapFromCoursetoCourseDTO).
+                stream().map(courseMapper::mapFromCoursetoCourseResponseDTO).
                 collect(Collectors.toList());
     }
 
@@ -38,81 +42,57 @@ public class CourseService implements BaseService<CourseDTO>{
      * @return CourseDTO
      */
     @Override
-    public CourseDTO findByName(String name) {
-        return courseRepository.findByCourseName(name).map(courseMapper::mapFromCoursetoCourseDTO).get();
+    public CourseResponseDTO findByName(String name) {
+        return courseRepository.findByCourseName(name).map(courseMapper::mapFromCoursetoCourseResponseDTO)
+                .orElseThrow(() -> new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND));
     }
 
-    /** Save a CourseDTO  to database changing Course
+    /** Save Course to database using CourseRequestDTO
      *
-     * @param courseDTO
+     * @param courseRequestDTO
      * @return CourseDTO
      */
-    @Override
-    public CourseDTO save(CourseDTO courseDTO) {
-        Course course = courseMapper.mapFromCourseDTOtoCourse(courseDTO);
-        if(courseRepository.existsByCourseCode(course.getCourseCode())){
+
+    public CourseResponseDTO save(CourseRequestDTO courseRequestDTO) {
+        if(courseRepository.existsByCourseCode(courseRequestDTO.getCourseCode())){
             throw new CourseIsAlreadyExistException(MessageConstants.ENTITY_ALREADY_EXIST);
         }else{
+            Course course = courseMapper.mapFromCourseRequestDTOtoCourse(courseRequestDTO);
             courseRepository.save(course);
-            return courseDTO;
+            CourseResponseDTO courseResponseDTO = courseMapper.mapFromCoursetoCourseResponseDTO(course);
+            return courseResponseDTO;
         }
 
     }
 
-    /** Delete a course by name
+    /** Delete course by id
      *
-     * @param courseName
+     * @param id
      */
     @Override
-    public void deleteByName(String courseName) {
-        if(!courseRepository.findByCourseName(courseName).isPresent()){
-            throw new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND);
-        }else
-            courseRepository.deleteByCourseName(courseName);
-    }
-
-
-    /** Update Course using CourseDTO
-     *
-     * @param courseDTO
-     * @return CourseDTO
-     */
-    @Override
-    public CourseDTO update(CourseDTO courseDTO) {
-        Course course = courseRepository.findByCourseCode(courseDTO.getCourseCode()).orElseThrow(() -> new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND));
-
-        Course mappedCourse=courseMapper.mapFromCourseDTOtoCourse(courseDTO);
-        mappedCourse.setId(course.getId());
-        courseRepository.save(mappedCourse);
-        return courseDTO;
-
-        /*
-        if(!courseRepository.existsByCourseCode(courseDTO.getCourseCode())){
+    public void deleteById(long id) {
+        if(!courseRepository.findById(id).isPresent()){
             throw new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND);
         }else {
-
-
-            Course course = courseMapper.mapFromCourseDTOtoCourse(courseDTO);
-            courseRepository.save(course);
-            return courseDTO;
-
-
+            courseRepository.deleteById(id);
+            System.out.println(MessageConstants.ENTITY_DELETED);
         }
-
-        */
-
     }
 
 
+    /** Update Course using CourseResponseDTO. We use CourseResponseDTO for id
+     *
+     * @param courseResponseDTO
+     * @return CourseDTO
+     */
 
+    public CourseResponseDTO update(@RequestBody @Valid CourseResponseDTO courseResponseDTO) {
 
-//List<CourseDTO> courses = courseRepository.findAll().stream().map(courseMapper::mapFromCoursetoCourseDTO).collect(Collectors.toList());
-
-
-    /*
-    public Optional<Course> saveCourse(CourseDTO courseDTO){
-        Course course = courseMapper.mapFromCourseDTOtoCourse(courseDTO);
-        return Optional.of(courseRepository.save(course));
+        Course course = courseRepository.findById(courseResponseDTO.getId()).orElseThrow(() -> new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND));
+        Course mappedCourse = courseMapper.mapFromCourseResponseDTOtoCourse(courseResponseDTO);
+        mappedCourse.setId(course.getId());
+        courseRepository.save(mappedCourse);
+        return courseResponseDTO;
     }
-    */
+
 }

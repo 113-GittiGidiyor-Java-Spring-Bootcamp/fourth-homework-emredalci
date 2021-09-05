@@ -10,7 +10,7 @@ import javax.persistence.Entity;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class ApplicationErrorResponse extends AbstractBaseEntity{
+public class ErrorResponse extends AbstractBaseEntity{
 
     private int status;
     private String message;

@@ -31,7 +31,7 @@ public class Course extends AbstractBaseEntity{
     @Column(name = "credit_score",nullable = false)
     private double creditScore;
 
-    @ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
+    @ManyToMany( fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"courses"})
     private Set<Student> students = new HashSet<>();
 
@@ -42,8 +42,6 @@ public class Course extends AbstractBaseEntity{
     private Instructor instructor;
 
     //equals and HashCode
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

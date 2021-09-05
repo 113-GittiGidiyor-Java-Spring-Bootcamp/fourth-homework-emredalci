@@ -1,98 +1,158 @@
 package dev.patika.fourthhomework.service;
 
-import dev.patika.fourthhomework.dto.InstructorDTO;
+import dev.patika.fourthhomework.dto.*;
 import dev.patika.fourthhomework.exception.EntityNotFoundException;
 import dev.patika.fourthhomework.exception.InstructorIsAlreadyExistException;
 import dev.patika.fourthhomework.mapper.InstructorMapper;
 import dev.patika.fourthhomework.model.Instructor;
+import dev.patika.fourthhomework.model.PermanentInstructor;
+import dev.patika.fourthhomework.model.VisitingResearcher;
 import dev.patika.fourthhomework.repository.InstructorRepository;
 import dev.patika.fourthhomework.util.MessageConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class InstructorService implements BaseService<InstructorDTO>{
+@Transactional
+public class InstructorService implements BaseService<InstructorResponseDTO>{
 
     private final InstructorRepository instructorRepository;
     private final InstructorMapper instructorMapper;
 
-    /** Represent all InstructorDTOs
+    /** Represent all InstructorResponseDTOs
      *
      * @return InstructorDTO
      */
     @Override
-    public List<InstructorDTO> findAll() {
+    public List<InstructorResponseDTO> findAll() {
         return instructorRepository.findAll()
-                .stream().map(instructorMapper::mapFromInstructortoInstructorDTO)
+                .stream().map(instructorMapper::mapFromInstructortoInstructorResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    /** Represent InstructorDTO by instructor name
+    /** Represent InstructorResponseDTO by instructor name
      *
      * @param instructorName
      * @return InstructorDTO
      */
     @Override
-    public InstructorDTO findByName(String instructorName) {
+    public InstructorResponseDTO findByName(String instructorName) {
         return instructorRepository.findByName(instructorName)
-                .map(instructorMapper::mapFromInstructortoInstructorDTO).get();
+                .map(instructorMapper::mapFromInstructortoInstructorResponseDTO).get();
     }
 
-    /** Save a InstructorDTO to database changing Instructor
+    /** save PermanentInstructor using PermanentInstructorRequestDTO
      *
-     * @param instructorDTO
-     * @return InstructorDTO
+     * @param permanentInstructorRequestDTO
+     * @return PermanentInstructorDTO
      */
-    @Override
-    public InstructorDTO save(InstructorDTO instructorDTO) {
-        Instructor instructor = instructorMapper.mapFromInstructorDTOtoInstructor(instructorDTO);
-        if(instructorRepository.existsByNameAndPhoneNumber(instructor.getName(),instructor.getPhoneNumber())){
+    public PermanentInstructorResponseDTO savePermentInstructor(PermanentInstructorRequestDTO permanentInstructorRequestDTO) {
+        if(instructorRepository.existsByNameAndPhoneNumber(permanentInstructorRequestDTO.getName(),permanentInstructorRequestDTO.getPhoneNumber())){
             throw new InstructorIsAlreadyExistException(MessageConstants.ENTITY_ALREADY_EXIST);
         }else {
-            instructorRepository.save(instructor);
-            return instructorDTO;
+            PermanentInstructor permanentInstructor =
+                    instructorMapper.mapFromPermanentInstructorRequestDTOtoPermanentInstructor(permanentInstructorRequestDTO);
+
+
+            instructorRepository.save(permanentInstructor);
+
+            PermanentInstructorResponseDTO permanentInstructorResponseDTO
+                    = instructorMapper.mapFromPermanentInstructortoPermanentInstructorResponseDTO(permanentInstructor);
+
+
+            return permanentInstructorResponseDTO;
+        }
+
+    }
+
+    /** save VisitingResearcher using VisitingResearcherRequestDTO
+     *
+     * @param visitingResearcherRequestDTO
+     * @return VisitingResearcherDTO
+     */
+    public VisitingResearcherResponseDTO saveVisitingResearcher(VisitingResearcherRequestDTO visitingResearcherRequestDTO) {
+        if(instructorRepository.existsByNameAndPhoneNumber(visitingResearcherRequestDTO.getName(),visitingResearcherRequestDTO.getPhoneNumber())){
+            throw new InstructorIsAlreadyExistException(MessageConstants.ENTITY_ALREADY_EXIST);
+        }else {
+            VisitingResearcher visitingResearcher =
+                    instructorMapper.mapFromVisitingResearcherRequestDTOtoVisitingResearcher(visitingResearcherRequestDTO);
+
+
+            instructorRepository.save(visitingResearcher);
+
+            VisitingResearcherResponseDTO visitingResearcherResponseDTO =
+                    instructorMapper.mapFromVisitingResearchertoVisitingResearcherResponseDTO(visitingResearcher);
+
+            return visitingResearcherResponseDTO;
 
         }
 
     }
 
-    /** Delete a instructor by name
+
+    /** Delete instructor using id
      *
-     * @param name
+     * @param id
      */
     @Override
-    public void deleteByName(String name) {
-        if(!instructorRepository.findByName(name).isPresent()){
+    public void deleteById(long id) {
+        if(!instructorRepository.findById(id).isPresent()){
             throw new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND);
         }else {
-            instructorRepository.deleteByName(name);
+            instructorRepository.deleteById(id);
+            System.out.println(MessageConstants.ENTITY_DELETED);
         }
-
     }
 
-    /** Update Instructor using InstructorDTO
+    /** Update Permanent Instructor using PermanentInstructorResponseDTO.We use PermanentInstructorResponseDTO
+     * for id
      *
-     * @param instructorDTO
+     * @param permanentInstructorResponseDTO
      * @return
      */
-    @Override
-    public InstructorDTO update(InstructorDTO instructorDTO) {
-        if (!instructorRepository.existsByNameAndPhoneNumber(instructorDTO.getName(),instructorDTO.getPhoneNumber())){
-            throw new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND);
-        }else {
-            Instructor instructor = instructorMapper.mapFromInstructorDTOtoInstructor(instructorDTO);
-            instructorRepository.save(instructor);
-            return instructorDTO;
-        }
 
+    public PermanentInstructorResponseDTO updatePermanentInstructor(@RequestBody @Valid PermanentInstructorResponseDTO permanentInstructorResponseDTO) {
+        PermanentInstructor permanentInstructor
+                = (PermanentInstructor) instructorRepository.findById(permanentInstructorResponseDTO.getId())
+                .orElseThrow(() -> new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND));
+        PermanentInstructor mappedPermanentInstructor = instructorMapper.mapFromPermanentInstructorResponseDTOtoPermanentInstructor(permanentInstructorResponseDTO);
+        mappedPermanentInstructor.setId(permanentInstructorResponseDTO.getId());
+        instructorRepository.save(mappedPermanentInstructor);
+        return permanentInstructorResponseDTO;
     }
 
+    /** Update Visiting Researcher using VisitingResearcherResponseDTO. We use VisitingResearcherResponseDTO
+     * for id
+     *
+     * @param visitingResearcherResponseDTO
+     * @return
+     */
+    public VisitingResearcherResponseDTO updateVisitingResearcher(@RequestBody @Valid VisitingResearcherResponseDTO visitingResearcherResponseDTO){
+        VisitingResearcher visitingResearcher =
+                (VisitingResearcher) instructorRepository.findById(visitingResearcherResponseDTO.getId())
+                        .orElseThrow(() -> new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND));
+        VisitingResearcher mappedVisitingResearcher = instructorMapper.mapFromVisitingResearherResponseDTOtoVisitingResearcher(visitingResearcherResponseDTO);
+        mappedVisitingResearcher.setId(visitingResearcherResponseDTO.getId());
+        instructorRepository.save(mappedVisitingResearcher);
+        return visitingResearcherResponseDTO;
+    }
+
+    /** Represent instructor by id
+     *
+     * @param id
+     * @return Instructor
+     */
     public Instructor findById(long id){
         return instructorRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND));
     }
+
+
 }

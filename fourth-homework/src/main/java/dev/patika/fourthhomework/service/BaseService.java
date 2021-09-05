@@ -9,11 +9,11 @@ public interface BaseService<T>{
 
     T findByName(String name);
 
-    T save(T object);
+    //T save(T object);
 
-    void deleteByName(String name);
+    //T update(T object);
 
-    T update(T object);
+    void deleteById(long id);
 
 
 }

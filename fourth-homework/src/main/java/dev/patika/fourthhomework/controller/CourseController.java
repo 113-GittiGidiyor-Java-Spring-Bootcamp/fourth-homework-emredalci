@@ -1,8 +1,8 @@
 package dev.patika.fourthhomework.controller;
 
 
-import dev.patika.fourthhomework.dto.CourseDTO;
-import dev.patika.fourthhomework.model.Course;
+import dev.patika.fourthhomework.dto.CourseRequestDTO;
+import dev.patika.fourthhomework.dto.CourseResponseDTO;
 import dev.patika.fourthhomework.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,40 +11,41 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/course")
+@RequestMapping("/api/courses")
 @RequiredArgsConstructor
 public class CourseController {
 
     private final CourseService courseService;
 
     @GetMapping("/find-all")
-    public ResponseEntity<List<CourseDTO>> findAllCourses(){
+    public ResponseEntity<List<CourseResponseDTO>> findAllCourses(){
         return new ResponseEntity<>(courseService.findAll(),HttpStatus.OK);
     }
 
 
     @GetMapping("/find-by-name")
-    public CourseDTO findByName(String name) {
+    public CourseResponseDTO findByName(String name) {
         return courseService.findByName(name);
     }
 
-    @GetMapping("/delete-by-courseName")
-    public void deleteByName(String courseName){
-        courseService.deleteByName(courseName);
+
+    @DeleteMapping("/delete-by-id")
+    public void deleteById(long id){
+        courseService.deleteById(id);
     }
+
 
 
     @PostMapping("/save-course")
-    public ResponseEntity<CourseDTO> saveCourse(@RequestBody @Valid CourseDTO courseDTO){
-        return new ResponseEntity<>(courseService.save(courseDTO), HttpStatus.OK);
+    public ResponseEntity<CourseResponseDTO> saveCourse(@RequestBody @Valid CourseRequestDTO courseRequestDTO){
+        return new ResponseEntity<>(courseService.save(courseRequestDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/update")
-    public CourseDTO update(@RequestBody @Valid CourseDTO courseDTO) {
-        return courseService.update(courseDTO);
+    public CourseResponseDTO update(@RequestBody @Valid CourseResponseDTO CourseResponseDTO) {
+        return courseService.update(CourseResponseDTO);
     }
 
 }

@@ -1,8 +1,8 @@
 package dev.patika.fourthhomework.exception;
 
 
-import dev.patika.fourthhomework.model.ApplicationErrorResponse;
-import dev.patika.fourthhomework.service.ApplicationErrorResponseService;
+import dev.patika.fourthhomework.model.ErrorResponse;
+import dev.patika.fourthhomework.service.ErrorResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,59 +14,59 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
 
-    private final ApplicationErrorResponseService applicationErrorResponseService;
+    private final ErrorResponseService errorResponseService;
 
     @ExceptionHandler({CourseIsAlreadyExistException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApplicationErrorResponse> handleException(CourseIsAlreadyExistException exc) {
-        ApplicationErrorResponse response = prepareErrorResponse(HttpStatus.BAD_REQUEST,exc.getMessage());
+    public ResponseEntity<ErrorResponse> handleException(CourseIsAlreadyExistException exc) {
+        ErrorResponse response = prepareErrorResponse(HttpStatus.BAD_REQUEST,exc.getMessage());
         return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({InstructorIsAlreadyExistException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public  ResponseEntity<ApplicationErrorResponse> handleException(InstructorIsAlreadyExistException exc){
-        ApplicationErrorResponse response = prepareErrorResponse(HttpStatus.BAD_REQUEST,exc.getMessage());
+    public  ResponseEntity<ErrorResponse> handleException(InstructorIsAlreadyExistException exc){
+        ErrorResponse response = prepareErrorResponse(HttpStatus.BAD_REQUEST,exc.getMessage());
         return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({StudentAgeNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApplicationErrorResponse> handleException(StudentAgeNotValidException exc){
-        ApplicationErrorResponse response = prepareErrorResponse(HttpStatus.BAD_REQUEST,exc.getMessage());
+    public ResponseEntity<ErrorResponse> handleException(StudentAgeNotValidException exc){
+        ErrorResponse response = prepareErrorResponse(HttpStatus.BAD_REQUEST,exc.getMessage());
         return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({StudentNumberForOneCourseExceedException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApplicationErrorResponse> handleException(StudentNumberForOneCourseExceedException exc){
-        ApplicationErrorResponse response = prepareErrorResponse(HttpStatus.BAD_REQUEST, exc.getMessage());
+    public ResponseEntity<ErrorResponse> handleException(StudentNumberForOneCourseExceedException exc){
+        ErrorResponse response = prepareErrorResponse(HttpStatus.BAD_REQUEST, exc.getMessage());
         return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({EntityNotFoundException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApplicationErrorResponse> handleException(EntityNotFoundException exc){
-        ApplicationErrorResponse response = prepareErrorResponse(HttpStatus.BAD_REQUEST, exc.getMessage());
-        return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorResponse> handleException(EntityNotFoundException exc){
+        ErrorResponse response = prepareErrorResponse(HttpStatus.NOT_FOUND, exc.getMessage());
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
     }
 
 
     @ExceptionHandler({StudentIsAlreadyExistException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApplicationErrorResponse> handleException(StudentIsAlreadyExistException exc){
-        ApplicationErrorResponse response = prepareErrorResponse(HttpStatus.BAD_REQUEST,exc.getMessage());
+    public ResponseEntity<ErrorResponse> handleException(StudentIsAlreadyExistException exc){
+        ErrorResponse response = prepareErrorResponse(HttpStatus.BAD_REQUEST,exc.getMessage());
         return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
     }
 
 
-    private ApplicationErrorResponse prepareErrorResponse(HttpStatus httpStatus, String message) {
+    private ErrorResponse prepareErrorResponse(HttpStatus httpStatus, String message) {
 
-        ApplicationErrorResponse response = new ApplicationErrorResponse();
+        ErrorResponse response = new ErrorResponse();
         response.setStatus(httpStatus.value());
         response.setMessage(message);
 
-        applicationErrorResponseService.save(response);
+        errorResponseService.save(response);
         return response;
 
     }

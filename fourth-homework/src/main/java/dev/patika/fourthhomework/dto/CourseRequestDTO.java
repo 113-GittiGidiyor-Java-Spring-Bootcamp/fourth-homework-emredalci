@@ -2,6 +2,8 @@ package dev.patika.fourthhomework.dto;
 
 
 
+import dev.patika.fourthhomework.model.Instructor;
+import dev.patika.fourthhomework.model.Student;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +19,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourseDTO{
+public class CourseRequestDTO {
 
     @ApiModelProperty(example = "CS101")
     @NotBlank(message = "Course code is mandatory")
@@ -36,7 +38,6 @@ public class CourseDTO{
 
     @NotNull(message = "Instructor id is mandatory")
     private long instructorId;
-
 
     private Set<Long> studentIds = new HashSet<>();
 

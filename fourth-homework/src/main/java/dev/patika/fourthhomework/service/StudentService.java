@@ -120,4 +120,14 @@ public class StudentService implements BaseService<StudentResponseDTO>{
         return students;
 
     }
+
+    public Set<Long> findAllId(Set<Student> students){
+        Set<Long> studentsIds = new HashSet<>();
+        for (Student s:students
+        ) {
+            studentsIds.add(s.getId());
+        };
+        return studentsIds;
+
+    }
 }

@@ -31,6 +31,7 @@ public class StudentController {
     public void deleteById(long id){
         studentService.deleteById(id);
     }
+
     @PostMapping("/save-student")
     public StudentResponseDTO save(@RequestBody @Valid StudentRequestDTO studentRequestDTO) {
         return studentService.save(studentRequestDTO);

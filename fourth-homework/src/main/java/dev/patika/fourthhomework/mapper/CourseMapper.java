@@ -19,22 +19,14 @@ public abstract class CourseMapper {
     protected StudentService studentService;
 
 
-
-    //Yeni
     @Mapping(target = "instructor", expression = "java(instructorService.findById(courseRequestDTO.getInstructorId()))")
     @Mapping(target = "students",expression = "java(studentService.findAllIds(courseRequestDTO.getStudentIds()))")
     public abstract Course mapFromCourseRequestDTOtoCourse(CourseRequestDTO courseRequestDTO);
 
+    @Mapping(target = "instructorId", expression = "java(course.getInstructor().getId())")
+    @Mapping(target = "studentIds",expression = "java(studentService.findAllId(course.getStudents()))")
     public abstract CourseResponseDTO mapFromCoursetoCourseResponseDTO(Course course);
     public abstract Course mapFromCourseResponseDTOtoCourse(CourseResponseDTO courseResponseDTO);
 
-
-    //Eski
-    /*
-    @Mapping(target = "instructor", expression = "java(instructorService.findById(courseDTO.getInstructorId()))")
-    @Mapping(target = "students",expression = "java(studentService.findAllIds(courseDTO.getStudentIds()))")
-    public abstract Course mapFromCourseDTOtoCourse(CourseRequestDTO courseRequestDTO);
-    public abstract CourseRequestDTO mapFromCoursetoCourseDTO(Course course);
-     */
 
 }

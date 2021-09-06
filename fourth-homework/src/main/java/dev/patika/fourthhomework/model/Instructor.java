@@ -36,7 +36,7 @@ public class Instructor extends AbstractBaseEntity{
     @Column(name = "phone_number",nullable = false,unique = true,length = 11)
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "instructor", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "instructor", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JsonManagedReference
     @JsonIgnoreProperties({"instructor","students"})
     private Set<Course> courses = new HashSet<>();

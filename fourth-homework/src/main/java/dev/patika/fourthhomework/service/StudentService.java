@@ -121,6 +121,11 @@ public class StudentService implements BaseService<StudentResponseDTO>{
 
     }
 
+    /** Represent students ids for course mapping
+     *
+     * @param students
+     * @return
+     */
     public Set<Long> findAllId(Set<Student> students){
         Set<Long> studentsIds = new HashSet<>();
         for (Student s:students

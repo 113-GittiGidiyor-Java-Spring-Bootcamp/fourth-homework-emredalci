@@ -4,6 +4,7 @@ import dev.patika.fourthhomework.dto.CourseRequestDTO;
 import dev.patika.fourthhomework.dto.CourseResponseDTO;
 import dev.patika.fourthhomework.exception.CourseIsAlreadyExistException;
 import dev.patika.fourthhomework.exception.EntityNotFoundException;
+import dev.patika.fourthhomework.exception.StudentNumberForOneCourseExceedException;
 import dev.patika.fourthhomework.mapper.CourseMapper;
 import dev.patika.fourthhomework.model.Course;
 import dev.patika.fourthhomework.repository.CourseRepository;
@@ -56,7 +57,10 @@ public class CourseService implements BaseService<CourseResponseDTO>{
     public CourseResponseDTO save(CourseRequestDTO courseRequestDTO) {
         if(courseRepository.existsByCourseCode(courseRequestDTO.getCourseCode())){
             throw new CourseIsAlreadyExistException(MessageConstants.ENTITY_ALREADY_EXIST);
-        }else{
+        }else if(courseRequestDTO.getStudentIds().size()>20){
+            throw new StudentNumberForOneCourseExceedException(MessageConstants.STUDENT_NUMBER_IS_INVALID);
+        }
+        else{
             Course course = courseMapper.mapFromCourseRequestDTOtoCourse(courseRequestDTO);
             courseRepository.save(course);
             CourseResponseDTO courseResponseDTO = courseMapper.mapFromCoursetoCourseResponseDTO(course);
